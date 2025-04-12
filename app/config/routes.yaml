@@ -1,0 +1,7 @@
+# config/routes.yaml
+# This file is the central routing configuration for your Symfony application.
+
+controllers:
+    resource: '../src/Controller/'
+    type: attribute
+

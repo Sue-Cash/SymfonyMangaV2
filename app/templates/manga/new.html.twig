@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un Manga{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col">
+        <h1>Créer un Nouveau Manga</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        {{ include('manga/_form.html.twig', {'form': form, 'button_label': 'Créer'}) }}
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col">
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}
