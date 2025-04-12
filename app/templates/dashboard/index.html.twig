@@ -39,7 +39,7 @@
     <a href="{{ path('manga_new') }}" class="btn btn-success">Ajouter un Manga</a>
 </div>
 
-{# Tableau de listing des mangas #}
+{# Tableau de listing des mangas avec affichage du category_id #}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -48,6 +48,7 @@
             <th>Prix</th>
             <th>Date de création</th>
             <th>Auteur</th>
+            <th>Category ID</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -59,6 +60,8 @@
             <td>{{ manga.price }}</td>
             <td>{{ manga.createdAt ? manga.createdAt|date('d/m/Y H:i') : '' }}</td>
             <td>{{ manga.createdBy.email }}</td>
+            {# Affichage direct de la colonne category_id #}
+            <td>{{ manga.categoryId }}</td>
             <td>
                 {% if is_granted('ROLE_ADMIN') or (manga.createdBy.id == app.user.id) %}
                     <a href="{{ path('manga_edit', {'id': manga.id}) }}" class="btn btn-sm btn-secondary">Edit</a>
@@ -70,7 +73,7 @@
         </tr>
     {% else %}
         <tr>
-            <td colspan="6">Aucun manga trouvé.</td>
+            <td colspan="7">Aucun manga trouvé.</td>
         </tr>
     {% endfor %}
     </tbody>
