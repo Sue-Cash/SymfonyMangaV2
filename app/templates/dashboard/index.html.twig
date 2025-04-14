@@ -1,93 +1,172 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard - MangaCollect{% endblock %}
 
 {% block body %}
-<div class="mb-4 d-flex justify-content-between align-items-center">
-    <h1>Dashboard - Liste des Mangas</h1>
-    {% if is_granted('ROLE_ADMIN') %}
-        <a href="{{ path('app_tag_index') }}" class="btn btn-primary">Gérer les tags</a>
-    {% endif %}
-</div>
-
-{# Formulaire de recherche et filtres #}
-<form method="get" action="{{ path('app_dashboard') }}" class="row g-3 mb-4">
-    <div class="col-md-3">
-        <label for="filter_title" class="form-label">Titre</label>
-        <input type="text" id="filter_title" name="title" value="{{ filter.title }}" class="form-control" placeholder="Rechercher par titre">
-    </div>
-    <div class="col-md-3">
-        <label for="filter_price" class="form-label">Prix minimum</label>
-        <input type="number" id="filter_price" name="price" value="{{ filter.price }}" step="0.01" class="form-control" placeholder="Prix minimum">
-    </div>
-    <div class="col-md-3">
-        <label for="filter_author" class="form-label">Auteur (Email)</label>
-        <input type="text" id="filter_author" name="author" value="{{ filter.author }}" class="form-control" placeholder="Rechercher par auteur">
-    </div>
-    <div class="col-md-2">
-        <div class="form-check pt-4">
-            <input class="form-check-input" type="checkbox" id="filter_onlyMine" name="onlyMine" {% if filter.onlyMine %}checked{% endif %}>
-            <label class="form-check-label" for="filter_onlyMine">
-                Mes mangas seulement
-            </label>
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="display-4">
+                    <i class="fas fa-book me-2"></i> Ma Collection de Mangas
+                </h1>
+                <p class="lead text-muted">Explorez et gérez votre bibliothèque de mangas</p>
+            </div>
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="col-auto">
+                <a href="{{ path('app_tag_index') }}" class="btn btn-primary">
+                    <i class="fas fa-tags me-1"></i> Gérer les tags
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
-    <div class="col-md-1 pt-4">
-        <button type="submit" class="btn btn-primary">Filtrer</button>
-    </div>
-</form>
-
-{# Bouton pour ajouter un nouveau manga #}
-<div class="mb-3">
-    <a href="{{ path('manga_new') }}" class="btn btn-success">Ajouter un Manga</a>
 </div>
 
-{# Tableau de listing des mangas avec tags au lieu de category_id #}
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Titre</th>
-            <th>Prix</th>
-            <th>Date de création</th>
-            <th>Auteur</th>
-            <th>Tags</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for manga in mangas %}
-        <tr>
-            <td>{{ manga.id }}</td>
-            <td>{{ manga.title }}</td>
-            <td>{{ manga.price }}</td>
-            <td>{{ manga.createdAt ? manga.createdAt|date('d/m/Y H:i') : '' }}</td>
-            <td>{{ manga.createdBy.email }}</td>
-            {# Remplacer category_id par tags #}
-            <td>
-                {% for tag in manga.tags %}
-                    <span class="badge bg-primary">{{ tag.label }}</span>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-search me-2"></i> Recherche et filtres
+        </h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="{{ path('app_dashboard') }}" class="row g-3">
+            <div class="col-md-3">
+                <label for="filter_title" class="form-label">Titre</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-book"></i></span>
+                    <input type="text" id="filter_title" name="title" value="{{ filter.title }}" class="form-control" placeholder="Rechercher par titre">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="filter_price" class="form-label">Prix minimum</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-yen-sign"></i></span>
+                    <input type="number" id="filter_price" name="price" value="{{ filter.price }}" step="0.01" class="form-control" placeholder="Prix minimum">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label for="filter_author" class="form-label">Auteur (Email)</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user-edit"></i></span>
+                    <input type="text" id="filter_author" name="author" value="{{ filter.author }}" class="form-control" placeholder="Rechercher par auteur">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label d-block">&nbsp;</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="filter_onlyMine" name="onlyMine" {% if filter.onlyMine %}checked{% endif %}>
+                    <label class="form-check-label" for="filter_onlyMine">
+                        <i class="fas fa-user me-1"></i> Mes mangas seulement
+                    </label>
+                </div>
+            </div>
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter me-1"></i> Filtrer
+                </button>
+                <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo me-1"></i> Réinitialiser
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-list me-2"></i> Liste des Mangas</h2>
+    <a href="{{ path('manga_new') }}" class="btn btn-success">
+        <i class="fas fa-plus-circle me-1"></i> Ajouter un Manga
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Titre</th>
+                        <th scope="col">Prix</th>
+                        <th scope="col">Date de création</th>
+                        <th scope="col">Auteur</th>
+                        <th scope="col">Tags</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for manga in mangas %}
+                    <tr>
+                        <td>{{ manga.id }}</td>
+                        <td class="fw-semibold">{{ manga.title }}</td>
+                        <td><span class="badge bg-info">{{ manga.price }} €</span></td>
+                        <td>{{ manga.createdAt ? manga.createdAt|date('d M Y') : '' }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar avatar-sm me-2 bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <span class="text-white fw-bold">{{ manga.createdBy.email|first|upper }}</span>
+                                </div>
+                                <span>{{ manga.createdBy.email }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% for tag in manga.tags %}
+                                <span class="manga-tag">{{ tag.label }}</span>
+                            {% else %}
+                                <span class="text-muted fst-italic">Aucun tag</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-end">
+                                {% if is_granted('ROLE_ADMIN') or (manga.createdBy.id == app.user.id) %}
+                                    <a href="{{ path('manga_edit', {'id': manga.id}) }}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <a href="{{ path('app_manga_edit_tags', {'id': manga.id}) }}" class="btn btn-sm btn-outline-info me-1" data-bs-toggle="tooltip" title="Gérer les tags">
+                                            <i class="fas fa-tags"></i>
+                                        </a>
+                                    {% endif %}
+                                    <form method="post" action="{{ path('manga_delete', {'id': manga.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce manga ?');" style="display: inline-block;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ manga.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted fst-italic">Aucune action</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
                 {% else %}
-                    <span class="text-muted">Aucun tag</span>
+                    <tr>
+                        <td colspan="7">
+                            <div class="text-center py-5">
+                                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                                <p class="h5 text-muted">Aucun manga trouvé</p>
+                                <p class="text-muted">Ajoutez votre premier manga ou modifiez vos critères de recherche</p>
+                                <a href="{{ path('manga_new') }}" class="btn btn-primary mt-2">
+                                    <i class="fas fa-plus-circle me-1"></i> Ajouter un manga
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
                 {% endfor %}
-            </td>
-            <td>
-                {% if is_granted('ROLE_ADMIN') or (manga.createdBy.id == app.user.id) %}
-                    <a href="{{ path('manga_edit', {'id': manga.id}) }}" class="btn btn-sm btn-secondary">Edit</a>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_manga_edit_tags', {'id': manga.id}) }}" class="btn btn-sm btn-info">Tags</a>
-                    {% endif %}
-                    {{ include('manga/_delete_form.html.twig', { 'manga': manga }) }}
-                {% else %}
-                    <span class="text-muted">Aucune action</span>
-                {% endif %}
-            </td>
-        </tr>
-    {% else %}
-        <tr>
-            <td colspan="7">Aucun manga trouvé.</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Initialisation des tooltips Bootstrap -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
 {% endblock %}

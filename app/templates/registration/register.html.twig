@@ -1,25 +1,161 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Création de compte{% endblock %}
+{% block title %}Créer un compte - MangaCollect{% endblock %}
 
 {% block body %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h1>Créer un compte</h1>
-        {{ form_start(registrationForm) }}
-            <div class="mb-3">
-                {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(registrationForm.email) }}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-user-plus me-2"></i> Créer un compte
+                    </h1>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        {{ form_errors(registrationForm) }}
+                        
+                        <div class="form-floating mb-4">
+                            {{ form_widget(registrationForm.email, {
+                                'attr': {
+                                    'class': 'form-control ' ~ (registrationForm.email.vars.valid ? '' : 'is-invalid'),
+                                    'placeholder': 'Email',
+                                    'autocomplete': 'email'
+                                }
+                            }) }}
+                            {{ form_label(registrationForm.email, 'Adresse email') }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(registrationForm.email) ?: 'Veuillez saisir une adresse email valide.' }}
+                            </div>
+                            <div class="form-text">Votre adresse email servira d'identifiant de connexion.</div>
+                        </div>
+                        
+                        <div class="form-floating mb-4">
+                            {{ form_widget(registrationForm.plainPassword, {
+                                'attr': {
+                                    'class': 'form-control ' ~ (registrationForm.plainPassword.vars.valid ? '' : 'is-invalid'),
+                                    'placeholder': 'Mot de passe',
+                                    'autocomplete': 'new-password'
+                                }
+                            }) }}
+                            {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(registrationForm.plainPassword) ?: 'Veuillez saisir un mot de passe valide (minimum 6 caractères).' }}
+                            </div>
+                            <div class="form-text">Le mot de passe doit contenir au moins 6 caractères.</div>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            {{ form_widget(registrationForm.agreeTerms, {
+                                'attr': {
+                                    'class': 'form-check-input ' ~ (registrationForm.agreeTerms.vars.valid ? '' : 'is-invalid')
+                                }
+                            }) }}
+                            <label class="form-check-label" for="{{ registrationForm.agreeTerms.vars.id }}">
+                                J'accepte les <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">conditions d'utilisation</a>
+                            </label>
+                            <div class="invalid-feedback">
+                                {{ form_errors(registrationForm.agreeTerms) ?: 'Vous devez accepter les conditions d\'utilisation.' }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i> S'inscrire
+                            </button>
+                        </div>
+                    {{ form_end(registrationForm) }}
+                </div>
+                
+                <div class="card-footer text-center py-3 bg-light">
+                    <div class="small">
+                        <p class="mb-0">Déjà inscrit ? <a href="{{ path('app_login') }}" class="fw-bold">Se connecter</a></p>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(registrationForm.plainPassword) }}
+            
+            <!-- Avantages de l'inscription -->
+            <div class="card mt-4 border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">
+                        <i class="fas fa-star text-warning me-2"></i>
+                        Avantages de l'inscription
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-book fa-lg text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Gérez votre collection</h6>
+                                    <p class="mb-0 text-muted small">Ajoutez et organisez vos mangas préférés.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-tags fa-lg text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Système de tags</h6>
+                                    <p class="mb-0 text-muted small">Classez vos mangas par catégories.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-success w-100">S'enregistrer</button>
-        {{ form_end(registrationForm) }}
-        <p class="mt-3 text-center">Déjà inscrit ? <a href="{{ path('app_login') }}">Connectez-vous ici</a></p>
+        </div>
     </div>
 </div>
+
+<!-- Modal pour les conditions d'utilisation -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Conditions d'utilisation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Acceptation des conditions</h6>
+                <p>En vous inscrivant sur MangaCollect, vous acceptez de respecter les présentes conditions d'utilisation.</p>
+                
+                <h6>2. Utilisation du service</h6>
+                <p>MangaCollect est une plateforme permettant aux utilisateurs de gérer leur collection de mangas. Vous êtes responsable de l'exactitude des informations que vous publiez.</p>
+                
+                <h6>3. Contenu utilisateur</h6>
+                <p>En publiant du contenu sur MangaCollect, vous conservez vos droits mais accordez une licence non exclusive pour son utilisation sur la plateforme.</p>
+                
+                <h6>4. Confidentialité</h6>
+                <p>MangaCollect respecte votre vie privée. Consultez notre politique de confidentialité pour plus d'informations.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">J'ai compris</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script pour validation des formulaires côté client
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
 {% endblock %}

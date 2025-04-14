@@ -1,18 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}My Symfony App{% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        {# Bootstrap 5 CSS from CDN #}
+        <title>{% block title %}MangaCollect{% endblock %}</title>
+        
+        <!-- Bootstrap 5 CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+        <!-- Font Awesome pour de meilleurs icônes -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        
+        <style>
+            :root {
+                --primary-color: #574b90;
+                --secondary-color: #3dc1d3;
+                --accent-color: #f78fb3;
+                --dark-color: #303952;
+                --light-color: #f5f6fa;
+                --success-color: #26de81;
+                --warning-color: #f7b731;
+                --danger-color: #fc5c65;
+            }
+            
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: #f8f9fa;
+                color: var(--dark-color);
+            }
+            
+            .navbar {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                background-color: white !important;
+            }
+            
+            .navbar-brand {
+                font-weight: 700;
+                color: var(--primary-color) !important;
+            }
+            
+            .navbar-nav .nav-link {
+                color: var(--dark-color);
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+            
+            .navbar-nav .nav-link:hover {
+                color: var(--primary-color);
+            }
+            
+            .btn-primary {
+                background-color: var(--primary-color);
+                border-color: var(--primary-color);
+            }
+            
+            .btn-primary:hover {
+                background-color: #483d77;
+                border-color: #483d77;
+            }
+            
+            .btn-outline-primary {
+                color: var(--primary-color);
+                border-color: var(--primary-color);
+            }
+            
+            .btn-outline-primary:hover {
+                background-color: var(--primary-color);
+                color: white;
+            }
+            
+            .btn-secondary {
+                background-color: var(--secondary-color);
+                border-color: var(--secondary-color);
+            }
+            
+            .card {
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                border: none;
+                transition: transform 0.3s ease;
+            }
+            
+            .card:hover {
+                transform: translateY(-5px);
+            }
+            
+            .table {
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            
+            .table thead {
+                background-color: var(--primary-color);
+                color: white;
+            }
+            
+            .badge {
+                font-weight: 500;
+                padding: 5px 10px;
+                border-radius: 30px;
+            }
+            
+            .badge-primary {
+                background-color: var(--primary-color);
+            }
+            
+            .form-control {
+                border-radius: 8px;
+                padding: 10px 15px;
+                border: 1px solid #e1e5eb;
+            }
+            
+            .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 0.25rem rgba(87, 75, 144, 0.25);
+            }
+            
+            .page-header {
+                padding: 20px 0;
+                margin-bottom: 30px;
+                border-bottom: 1px solid #e1e5eb;
+            }
+            
+            .footer {
+                background-color: white;
+                padding: 20px 0;
+                margin-top: 50px;
+                border-top: 1px solid #e1e5eb;
+            }
+            
+            /* Style pour les tags */
+            .manga-tag {
+                display: inline-block;
+                padding: 5px 10px;
+                margin: 2px;
+                border-radius: 20px;
+                background-color: #6c5ce7;
+                color: white;
+                font-size: 0.8rem;
+            }
+            
+            /* Animations */
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .table-responsive {
+                    border-radius: 10px;
+                    overflow: hidden;
+                }
+            }
+        </style>
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <!-- Navbar améliorée -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
             <div class="container">
-                <a class="navbar-brand" href="{{ path('app_dashboard') }}">My App</a>
+                <a class="navbar-brand d-flex align-items-center" href="{{ path('app_dashboard') }}">
+                    <i class="fas fa-book-open me-2"></i>
+                    <span>MangaCollect</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,19 +178,46 @@
                     <ul class="navbar-nav ms-auto">
                         {% if app.user %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_dashboard') }}">Dashboard</a>
+                                <a class="nav-link" href="{{ path('app_dashboard') }}">
+                                    <i class="fas fa-home me-1"></i> Dashboard
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <form id="logout-form" action="{{ path('app_logout') }}" method="post" class="d-inline">
-                                    <button class="btn btn-outline-danger btn-sm" type="submit">Logout</button>
-                                </form>
+                                <a class="nav-link" href="{{ path('manga_new') }}">
+                                    <i class="fas fa-plus me-1"></i> Ajouter un manga
+                                </a>
+                            </li>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_tag_index') }}">
+                                        <i class="fas fa-tags me-1"></i> Gérer les tags
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-1"></i> {{ app.user.email }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <form id="logout-form" action="{{ path('app_logout') }}" method="post" class="d-inline">
+                                            <button class="dropdown-item" type="submit">
+                                                <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                                <a class="nav-link" href="{{ path('app_login') }}">
+                                    <i class="fas fa-sign-in-alt me-1"></i> Connexion
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_register') }}">Register</a>
+                                <a class="nav-link" href="{{ path('app_register') }}">
+                                    <i class="fas fa-user-plus me-1"></i> Inscription
+                                </a>
                             </li>
                         {% endif %}
                     </ul>
@@ -41,22 +225,63 @@
             </div>
         </nav>
 
-        <div class="container">
-            {# Flash messages (if any) #}
+        <div class="container py-4">
+            <!-- Messages flash améliorés -->
             {% for label, messages in app.flashes %}
-                <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+                        <div class="d-flex align-items-center">
+                            {% if label == 'success' %}
+                                <i class="fas fa-check-circle me-2"></i>
+                            {% elseif label == 'danger' or label == 'error' %}
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                            {% elseif label == 'warning' %}
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% elseif label == 'info' %}
+                                <i class="fas fa-info-circle me-2"></i>
+                            {% endif %}
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
             {% endfor %}
             
             {% block body %}{% endblock %}
         </div>
 
-        {# Bootstrap 5 JS bundle #}
+        <!-- Footer amélioré -->
+        <footer class="footer mt-auto py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-0">© 2025 MangaCollect. Tous droits réservés.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item"><a href="#" class="text-muted">Politique de confidentialité</a></li>
+                            <li class="list-inline-item"><a href="#" class="text-muted">Conditions d'utilisation</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Bootstrap 5 JS et dépendances -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        
+        <!-- Script pour animations personnalisées -->
+        <script>
+            // Animation d'entrée pour les éléments principaux
+            document.addEventListener('DOMContentLoaded', function() {
+                const fadeElements = document.querySelectorAll('.card, .table');
+                fadeElements.forEach(function(element, index) {
+                    setTimeout(function() {
+                        element.classList.add('fade-in');
+                    }, index * 100);
+                });
+            });
+        </script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

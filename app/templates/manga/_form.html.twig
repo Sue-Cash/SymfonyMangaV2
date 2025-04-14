@@ -1,18 +1,136 @@
-{{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
-<div class="mb-3">
-    {{ form_label(form.title, null, {'label_attr': {'class': 'form-label'}}) }}
-    {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.title) }}
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-book me-2"></i> Informations du manga
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    {{ form_widget(form.title, {'attr': {'class': 'form-control ' ~ (form.title.vars.valid ? '' : 'is-invalid'), 'placeholder': 'Titre'}}) }}
+                    {{ form_label(form.title, 'Titre du manga') }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.title) ?: 'Veuillez saisir un titre.' }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    {{ form_widget(form.price, {'attr': {'class': 'form-control ' ~ (form.price.vars.valid ? '' : 'is-invalid'), 'placeholder': 'Prix', 'min': '0', 'step': '0.01'}}) }}
+                    {{ form_label(form.price, 'Prix (€)') }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.price) ?: 'Veuillez saisir un prix valide.' }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    {{ form_widget(form.category_id, {'attr': {'class': 'form-control ' ~ (form.category_id.vars.valid ? '' : 'is-invalid'), 'placeholder': 'Catégorie'}}) }}
+                    {{ form_label(form.category_id, 'ID de catégorie') }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.category_id) ?: 'Veuillez saisir un ID de catégorie valide.' }}
+                    </div>
+                    <div class="form-text">
+                        <i class="fas fa-info-circle me-1"></i> Catégories disponibles:
+                        <ul class="list-unstyled mb-0 small">
+                            <li><strong>2</strong> - Shonen</li>
+                            <li><strong>3</strong> - Kodomo</li>
+                            <li><strong>4</strong> - Shônen</li>
+                            <li><strong>5</strong> - Seinen</li>
+                            <li><strong>6</strong> - Shôjo</li>
+                            <li><strong>7</strong> - Josei</li>
+                            <li><strong>8</strong> - Gekiga</li>
+                            <li><strong>9</strong> - Nekketsu</li>
+                            <li><strong>10</strong> - Isekai</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            {% if form.tags is defined %}
+            <div class="col-12">
+                <div class="card mb-3 border-0 bg-light">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">
+                            <i class="fas fa-tags me-2"></i> Tags
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="tags-container">
+                            {{ form_widget(form.tags) }}
+                            {{ form_errors(form.tags) }}
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i> Sélectionnez un ou plusieurs tags pour catégoriser ce manga.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-footer bg-light d-flex justify-content-between py-3">
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour
+        </a>
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-save me-1"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 </div>
-<div class="mb-3">
-    {{ form_label(form.price, null, {'label_attr': {'class': 'form-label'}}) }}
-    {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.price) }}
-</div>
-<div class="mb-3">
-    {{ form_label(form.category_id, null, {'label_attr': {'class': 'form-label'}}) }}
-    {{ form_widget(form.category_id, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.category_id) }}
-</div>
-<button type="submit" class="btn btn-success">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
+
+<style>
+    /* Style pour les étiquettes des cases à cocher des tags */
+    div[id$="tags"] label.form-check-label {
+        display: inline-block;
+        margin: 0.3rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: 1px solid #dee2e6;
+    }
+    
+    /* Style quand la case est cochée */
+    div[id$="tags"] input[type="checkbox"]:checked + label.form-check-label {
+        background-color: #6c5ce7;
+        color: white;
+        border-color: #6c5ce7;
+    }
+    
+    /* NE PAS masquer les cases à cocher natives */
+    div[id$="tags"] input[type="checkbox"] {
+        margin-right: 5px;
+    }
+    
+    /* Layout pour les tags */
+    div[id$="tags"] .form-check {
+        display: inline-block;
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<script>
+    // Script pour validation des formulaires côté client
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>

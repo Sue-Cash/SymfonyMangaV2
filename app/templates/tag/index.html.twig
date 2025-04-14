@@ -1,39 +1,155 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tag index{% endblock %}
+{% block title %}Gestion des tags - MangaCollect{% endblock %}
 
 {% block body %}
-    <h1>Tag index</h1>
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1>
+                    <i class="fas fa-tags me-2"></i> Gestion des tags
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Tags</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-auto">
+                <a href="{{ path('app_tag_new') }}" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-1"></i> Ajouter un tag
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Label</th>
-                <th>Created_at</th>
-                <th>Updated_at</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for tag in tags %}
-            <tr>
-                <td>{{ tag.id }}</td>
-                <td>{{ tag.label }}</td>
-                <td>{{ tag.createdAt ? tag.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ tag.updatedAt ? tag.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_tag_show', {'id': tag.id}) }}">show</a>
-                    <a href="{{ path('app_tag_edit', {'id': tag.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i> Liste des tags
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" width="60">#</th>
+                                <th scope="col">Label</th>
+                                <th scope="col">Date de création</th>
+                                <th scope="col">Mangas associés</th>
+                                <th scope="col" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for tag in tags %}
+                            <tr>
+                                <td>{{ tag.id }}</td>
+                                <td>
+                                    <span class="manga-tag">{{ tag.label }}</span>
+                                </td>
+                                <td>{{ tag.createdAt ? tag.createdAt|date('d M Y') : '' }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ tag.mangas.count }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-end">
+                                        <a href="{{ path('app_tag_show', {'id': tag.id}) }}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" title="Voir">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_tag_edit', {'id': tag.id}) }}" class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="tooltip" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="{{ path('app_tag_delete', {'id': tag.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce tag ?');" style="display: inline-block;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tag.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                                        <p class="h5 text-muted">Aucun tag trouvé</p>
+                                        <p class="text-muted">Créez votre premier tag pour catégoriser vos mangas</p>
+                                        <a href="{{ path('app_tag_new') }}" class="btn btn-primary mt-2">
+                                            <i class="fas fa-plus-circle me-1"></i> Ajouter un tag
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i> Statistiques
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="p-3">
+                            <h3 class="h2 fw-bold text-primary">{{ tags|length }}</h3>
+                            <p class="text-muted mb-0">Tags</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3">
+                            {% set totalMangas = 0 %}
+                            {% for tag in tags %}
+                                {% set totalMangas = totalMangas + tag.mangas.count %}
+                            {% endfor %}
+                            <h3 class="h2 fw-bold text-secondary">{{ totalMangas }}</h3>
+                            <p class="text-muted mb-0">Associations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <a href="{{ path('app_tag_new') }}">Create new</a>
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i> À propos des tags
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Les tags vous permettent de catégoriser et d'organiser vos mangas de façon flexible. Vous pouvez associer plusieurs tags à un manga.
+                </p>
+                <h6><i class="fas fa-lightbulb me-1 text-warning"></i> Conseils d'utilisation:</h6>
+                <ul class="mb-0">
+                    <li>Créez des tags pour les genres (Action, Romance, etc.)</li>
+                    <li>Utilisez des tags pour indiquer le statut (En cours, Terminé, etc.)</li>
+                    <li>Ajoutez des tags pour les éditeurs ou collections spéciales</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
 {% endblock %}
