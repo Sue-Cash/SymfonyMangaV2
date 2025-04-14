@@ -3,8 +3,11 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block body %}
-<div class="mb-4">
+<div class="mb-4 d-flex justify-content-between align-items-center">
     <h1>Dashboard - Liste des Mangas</h1>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_tag_index') }}" class="btn btn-primary">Gérer les tags</a>
+    {% endif %}
 </div>
 
 {# Formulaire de recherche et filtres #}
@@ -39,7 +42,7 @@
     <a href="{{ path('manga_new') }}" class="btn btn-success">Ajouter un Manga</a>
 </div>
 
-{# Tableau de listing des mangas avec affichage du category_id #}
+{# Tableau de listing des mangas avec tags au lieu de category_id #}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -48,7 +51,7 @@
             <th>Prix</th>
             <th>Date de création</th>
             <th>Auteur</th>
-            <th>Category ID</th>
+            <th>Tags</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -60,11 +63,20 @@
             <td>{{ manga.price }}</td>
             <td>{{ manga.createdAt ? manga.createdAt|date('d/m/Y H:i') : '' }}</td>
             <td>{{ manga.createdBy.email }}</td>
-            {# Affichage direct de la colonne category_id #}
-            <td>{{ manga.categoryId }}</td>
+            {# Remplacer category_id par tags #}
+            <td>
+                {% for tag in manga.tags %}
+                    <span class="badge bg-primary">{{ tag.label }}</span>
+                {% else %}
+                    <span class="text-muted">Aucun tag</span>
+                {% endfor %}
+            </td>
             <td>
                 {% if is_granted('ROLE_ADMIN') or (manga.createdBy.id == app.user.id) %}
                     <a href="{{ path('manga_edit', {'id': manga.id}) }}" class="btn btn-sm btn-secondary">Edit</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_manga_edit_tags', {'id': manga.id}) }}" class="btn btn-sm btn-info">Tags</a>
+                    {% endif %}
                     {{ include('manga/_delete_form.html.twig', { 'manga': manga }) }}
                 {% else %}
                     <span class="text-muted">Aucune action</span>

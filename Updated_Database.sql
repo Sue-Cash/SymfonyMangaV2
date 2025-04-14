@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : db:3306
--- Généré le : ven. 11 avr. 2025 à 18:40
+-- Généré le : lun. 14 avr. 2025 à 10:34
 -- Version du serveur : 5.7.44
 -- Version de PHP : 8.2.27
 
@@ -116,7 +116,33 @@ INSERT INTO `manga` (`id`, `price`, `created_at`, `updated_at`, `title`, `catego
 (23, 7, '2025-02-27 11:48:40', '2025-02-27 11:48:40', 'Éric-Théophile Weber', 2, 1),
 (24, 5, '2025-02-27 11:48:40', '2025-02-27 11:48:40', 'Vincent Berger', 2, 1),
 (26, 6.67, '2025-04-03 11:08:21', '2025-04-03 11:08:21', 'Hajime No Ippo', 2, 1),
-(28, 103, '2025-04-11 17:28:23', '2025-04-11 18:22:07', 'TEST', 2, 4);
+(28, 103, '2025-04-11 17:28:23', '2025-04-14 09:38:45', 'TEST', 2, 4),
+(29, 56, '2025-04-14 10:32:11', '2025-04-14 10:32:11', 'Test 5', 2, 4);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `manga_tag`
+--
+
+CREATE TABLE `manga_tag` (
+  `manga_id` int(11) NOT NULL,
+  `tag_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `manga_tag`
+--
+
+INSERT INTO `manga_tag` (`manga_id`, `tag_id`) VALUES
+(26, 1),
+(28, 1),
+(29, 1),
+(26, 2),
+(28, 2),
+(26, 3),
+(28, 3),
+(29, 3);
 
 -- --------------------------------------------------------
 
@@ -133,6 +159,29 @@ CREATE TABLE `messenger_messages` (
   `available_at` datetime NOT NULL COMMENT '(DC2Type:datetime_immutable)',
   `delivered_at` datetime DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tag`
+--
+
+CREATE TABLE `tag` (
+  `id` int(11) NOT NULL,
+  `label` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `tag`
+--
+
+INSERT INTO `tag` (`id`, `label`, `created_at`, `updated_at`) VALUES
+(1, 'Tag 1', '2025-04-14 09:37:00', '2025-04-14 09:49:58'),
+(2, 'Tag 2', '2025-04-14 09:50:46', '2025-04-14 09:50:46'),
+(3, 'Tag 3', '2025-04-14 10:25:28', '2025-04-14 10:25:28'),
+(4, 'Tag 4', '2025-04-14 10:29:53', '2025-04-14 10:29:53');
 
 -- --------------------------------------------------------
 
@@ -183,6 +232,13 @@ ALTER TABLE `manga`
   ADD KEY `FK_manga_created_by` (`created_by_id`);
 
 --
+-- Index pour la table `manga_tag`
+--
+ALTER TABLE `manga_tag`
+  ADD PRIMARY KEY (`manga_id`,`tag_id`),
+  ADD KEY `FK_manga_tag_tag` (`tag_id`);
+
+--
 -- Index pour la table `messenger_messages`
 --
 ALTER TABLE `messenger_messages`
@@ -190,6 +246,12 @@ ALTER TABLE `messenger_messages`
   ADD KEY `IDX_75EA56E0FB7336F0` (`queue_name`),
   ADD KEY `IDX_75EA56E0E3BD61CE` (`available_at`),
   ADD KEY `IDX_75EA56E016BA31DB` (`delivered_at`);
+
+--
+-- Index pour la table `tag`
+--
+ALTER TABLE `tag`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Index pour la table `user`
@@ -212,13 +274,19 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT pour la table `manga`
 --
 ALTER TABLE `manga`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT pour la table `messenger_messages`
 --
 ALTER TABLE `messenger_messages`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `tag`
+--
+ALTER TABLE `tag`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `user`
@@ -236,6 +304,13 @@ ALTER TABLE `user`
 ALTER TABLE `manga`
   ADD CONSTRAINT `FK_765A9E0312469DE2` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`),
   ADD CONSTRAINT `FK_manga_created_by` FOREIGN KEY (`created_by_id`) REFERENCES `user` (`id`);
+
+--
+-- Contraintes pour la table `manga_tag`
+--
+ALTER TABLE `manga_tag`
+  ADD CONSTRAINT `FK_manga_tag_manga` FOREIGN KEY (`manga_id`) REFERENCES `manga` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `FK_manga_tag_tag` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

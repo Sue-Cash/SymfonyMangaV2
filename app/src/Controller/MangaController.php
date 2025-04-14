@@ -9,6 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Form\MangaTagsType;
+
 
 class MangaController extends AbstractController
 {
@@ -80,4 +82,26 @@ class MangaController extends AbstractController
         // Redirect to dashboard after deletion
         return $this->redirectToRoute('app_dashboard');
     }
+
+    #[Route('/{id}/edit-tags', name: 'app_manga_edit_tags', methods: ['GET', 'POST'])]
+public function editTags(Request $request, Manga $manga, EntityManagerInterface $entityManager): Response
+{
+    $this->denyAccessUnlessGranted('ROLE_ADMIN');
+    
+    $form = $this->createForm(\App\Form\MangaTagsType::class, $manga);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Les tags ont été mis à jour avec succès');
+        return $this->redirectToRoute('app_dashboard');
+    }
+
+    return $this->render('manga/edit_tags.html.twig', [
+        'manga' => $manga,
+        'form' => $form->createView(),
+    ]);
+}
+
 }

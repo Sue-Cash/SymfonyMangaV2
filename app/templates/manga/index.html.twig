@@ -5,15 +5,19 @@
 {% block body %}
     <h1>Manga index</h1>
 
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_tag_index') }}" class="btn btn-primary mb-3">Gérer les tags</a>
+    {% endif %}
+
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Title</th>
                 <th>Price</th>
+                <th>Tags</th>
                 <th>Created_at</th>
                 <th>Updated_at</th>
-                <th>Title</th>
-                <th>Category_id</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -21,14 +25,21 @@
         {% for manga in mangas %}
             <tr>
                 <td>{{ manga.id }}</td>
+                <td>{{ manga.title }}</td>
                 <td>{{ manga.price }}</td>
+                <td>
+                    {% for tag in manga.tags %}
+                        <span class="badge bg-primary">{{ tag.label }}</span>
+                    {% endfor %}
+                </td>
                 <td>{{ manga.createdAt ? manga.createdAt|date('Y-m-d') : '' }}</td>
                 <td>{{ manga.updatedAt ? manga.updatedAt|date('Y-m-d') : '' }}</td>
-                <td>{{ manga.title }}</td>
-                <td>{{ manga.categoryId }}</td>
                 <td>
                     <a href="{{ path('app_manga_show', {'id': manga.id}) }}">show</a>
                     <a href="{{ path('app_manga_edit', {'id': manga.id}) }}">edit</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_manga_edit_tags', {'id': manga.id}) }}">Modifier tags</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}

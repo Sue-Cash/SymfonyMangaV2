@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier les tags{% endblock %}
+
+{% block body %}
+    <h1>Modifier les tags de "{{ manga.title }}"</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_dashboard') }}" class="btn btn-secondary mt-3">Retour au dashboard</a>
+{% endblock %}
